@@ -20,7 +20,10 @@ async function bootstrap(): Promise<NestExpressApplication> {
   );
   app.enableCors({
     origin: [
+      'http://localhost:5173',
       'http://localhost:3000',
+      'https://www.livefootballarena.online',
+      'https://livefootballarena.online',
       'https://sportszone-frontend.vercel.app',
       'https://sportszone-frontend-git-main-imtiazz.vercel.app',
     ],
