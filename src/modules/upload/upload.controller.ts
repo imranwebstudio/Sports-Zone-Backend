@@ -3,11 +3,11 @@ import {
   UseGuards, BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { randomUUID } from 'crypto';
+import { memoryStorage } from 'multer';
+import { extname } from 'path';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CloudinaryService } from './cloudinary.service';
 
 const ALLOWED_EXT = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'];
 
@@ -16,17 +16,13 @@ const ALLOWED_EXT = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'];
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UploadController {
+  constructor(private readonly cloudinary: CloudinaryService) {}
+
   @Post('image')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: join(process.cwd(), 'uploads'),
-        filename: (_req, file, cb) => {
-          const ext = extname(file.originalname).toLowerCase();
-          cb(null, `${randomUUID()}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
       fileFilter: (_req, file, cb) => {
         const ext = extname(file.originalname).toLowerCase();
         if (!ALLOWED_EXT.includes(ext)) {
@@ -37,11 +33,12 @@ export class UploadController {
       limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('No file uploaded');
+    const result = await this.cloudinary.uploadBuffer(file.buffer, file.mimetype);
     return {
-      url: `/uploads/${file.filename}`,
-      filename: file.filename,
+      url: result.secure_url,
+      publicId: result.public_id,
       originalName: file.originalname,
       size: file.size,
     };
