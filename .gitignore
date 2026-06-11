@@ -2,6 +2,10 @@ node_modules
 # Keep environment variables out of version control
 .env
 /dist
+/api/dist
+/api/_dist
+/api/index.js
+/.ncc_out
 /generated/prisma
 .vercel
 .env*

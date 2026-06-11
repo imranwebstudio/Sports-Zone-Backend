@@ -3,16 +3,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
-import * as fs from 'fs';
-import * as path from 'path';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
-
-  // Ensure uploads directory exists
-  const uploadsDir = path.join(process.cwd(), 'uploads');
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
   app.setGlobalPrefix('api');
 
@@ -26,7 +19,13 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: config.get<string>('cors.origin'),
+    origin: [
+      'http://localhost:5173',
+      'https://www.livefootballarena.online',
+      'https://livefootballarena.online',
+      'https://sportszone-frontend.vercel.app',
+      'https://sportszone-frontend-git-main-imtiazz.vercel.app',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });

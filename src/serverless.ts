@@ -1,23 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
-import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import express from 'express';
-import type { Request, Response } from 'express';
 
-const expressApp = express();
-let isReady = false;
+let app: NestExpressApplication;
 
-async function bootstrap() {
-  if (isReady) return;
-
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp), {
-    logger: ['error', 'warn'],
-  });
-
+async function bootstrap(): Promise<NestExpressApplication> {
+  if (app) return app;
+  app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api');
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -26,26 +18,27 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: [
+      'http://localhost:3000',
+      'https://sportszone-frontend.vercel.app',
+      'https://sportszone-frontend-git-main-imtiazz.vercel.app',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });
-
-  const swaggerConfig = new DocumentBuilder()
+  const swaggerCfg = new DocumentBuilder()
     .setTitle('SportsZone API')
     .setDescription('Sports News & Live Match Platform API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, swaggerConfig));
-
+  SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, swaggerCfg));
   await app.init();
-  isReady = true;
+  return app;
 }
 
-export default async (req: Request, res: Response) => {
-  await bootstrap();
-  expressApp(req, res);
+export default async (req: any, res: any) => {
+  const nestApp = await bootstrap();
+  nestApp.getHttpAdapter().getInstance()(req, res);
 };
