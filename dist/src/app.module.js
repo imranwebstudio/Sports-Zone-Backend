@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
 const serve_static_1 = require("@nestjs/serve-static");
+const schedule_1 = require("@nestjs/schedule");
 const path_1 = require("path");
 const configuration_1 = __importDefault(require("./config/configuration"));
 const prisma_module_1 = require("./prisma/prisma.module");
@@ -28,6 +29,7 @@ const advertisements_module_1 = require("./modules/advertisements/advertisements
 const analytics_module_1 = require("./modules/analytics/analytics.module");
 const settings_module_1 = require("./modules/settings/settings.module");
 const upload_module_1 = require("./modules/upload/upload.module");
+const news_sync_module_1 = require("./modules/news-sync/news-sync.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -35,6 +37,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true, load: [configuration_1.default] }),
+            schedule_1.ScheduleModule.forRoot(),
             throttler_1.ThrottlerModule.forRoot({ throttlers: [{ ttl: 60000, limit: 100 }] }),
             serve_static_1.ServeStaticModule.forRoot({
                 rootPath: (0, path_1.join)(__dirname, '..', 'uploads'),
@@ -52,6 +55,7 @@ exports.AppModule = AppModule = __decorate([
             analytics_module_1.AnalyticsModule,
             settings_module_1.SettingsModule,
             upload_module_1.UploadModule,
+            news_sync_module_1.NewsSyncModule,
         ],
     })
 ], AppModule);

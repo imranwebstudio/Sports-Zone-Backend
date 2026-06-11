@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ScheduleModule } from '@nestjs/schedule';
 import { join } from 'path';
 import configuration from './config/configuration';
 import { PrismaModule } from './prisma/prisma.module';
@@ -16,10 +17,12 @@ import { AdvertisementsModule } from './modules/advertisements/advertisements.mo
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { NewsSyncModule } from './modules/news-sync/news-sync.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({ throttlers: [{ ttl: 60000, limit: 100 }] }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
@@ -37,6 +40,7 @@ import { UploadModule } from './modules/upload/upload.module';
     AnalyticsModule,
     SettingsModule,
     UploadModule,
+    NewsSyncModule,
   ],
 })
 export class AppModule {}
