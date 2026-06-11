@@ -37,20 +37,20 @@ export class AuthService {
 
   async seedAdmin() {
     const existing = await this.prisma.user.findUnique({
-      where: { email: 'admin@Live Football Arena.com' },
+      where: { email: 'admin@sportszone.com' },
     });
     if (existing) return { message: 'Admin already exists' };
 
     const hashed = await bcrypt.hash('Admin@1234', 12);
     await this.prisma.user.create({
       data: {
-        email: 'admin@Live Football Arena.com',
+        email: 'admin@sportszone.com',
         password: hashed,
         name: 'Super Admin',
         role: 'SUPER_ADMIN',
       },
     });
-    return { message: 'Admin seeded: admin@Live Football Arena.com / Admin@1234' };
+    return { message: 'Admin seeded: admin@sportszone.com / Admin@1234' };
   }
 
   async getProfile(userId: string) {

@@ -34,7 +34,7 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Live Football Arena API')
+    .setTitle('SportsZone API')
     .setDescription('Sports News & Live Match Platform API')
     .setVersion('1.0')
     .addBearerAuth()
