@@ -32,7 +32,7 @@ async function bootstrap() {
   });
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('SportsZone API')
+    .setTitle('Live Football Arena API')
     .setDescription('Sports News & Live Match Platform API')
     .setVersion('1.0')
     .addBearerAuth()
@@ -43,7 +43,7 @@ async function bootstrap() {
 
   const port = config.get<number>('port') || 3001;
   await app.listen(port);
-  console.log(`🚀 SportsZone API running on http://localhost:${port}/api`);
+  console.log(`🚀 Live Football Arena API running on http://localhost:${port}/api`);
   console.log(`📚 Swagger Docs: http://localhost:${port}/api/docs`);
 }
 bootstrap();
