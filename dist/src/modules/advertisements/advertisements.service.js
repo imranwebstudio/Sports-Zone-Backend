@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdvertisementsService = exports.CreateAdDto = void 0;
 const common_1 = require("@nestjs/common");
+const client_1 = require("@prisma/client");
+const class_validator_1 = require("class-validator");
 const prisma_service_1 = require("../../prisma/prisma.service");
 class CreateAdDto {
     name;
@@ -22,6 +24,40 @@ class CreateAdDto {
     page;
 }
 exports.CreateAdDto = CreateAdDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(client_1.AdSlot),
+    __metadata("design:type", String)
+], CreateAdDto.prototype, "slot", void 0);
+__decorate([
+    (0, class_validator_1.IsEnum)(client_1.AdNetwork),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdDto.prototype, "network", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateAdDto.prototype, "code", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateAdDto.prototype, "isActive", void 0);
+__decorate([
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateAdDto.prototype, "position", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateAdDto.prototype, "page", void 0);
 let AdvertisementsService = class AdvertisementsService {
     prisma;
     constructor(prisma) {

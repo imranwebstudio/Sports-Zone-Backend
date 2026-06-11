@@ -1,14 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { AdSlot, AdNetwork } from '@prisma/client';
+import { IsString, IsNotEmpty, IsEnum, IsOptional, IsBoolean, IsInt } from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export class CreateAdDto {
+  @IsString()
+  @IsNotEmpty()
   name: string;
+
+  @IsEnum(AdSlot)
   slot: AdSlot;
+
+  @IsEnum(AdNetwork)
+  @IsOptional()
   network?: AdNetwork;
+
+  @IsString()
+  @IsNotEmpty()
   code: string;
+
+  @IsBoolean()
+  @IsOptional()
   isActive?: boolean;
+
+  @IsInt()
+  @IsOptional()
   position?: number;
+
+  @IsString()
+  @IsOptional()
   page?: string;
 }
 

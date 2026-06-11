@@ -209,6 +209,7 @@ enum AdNetwork {
   ADSENSE
   EZOIC
   MEDIA_NET
+  MONETAG
   CUSTOM
 }
 
