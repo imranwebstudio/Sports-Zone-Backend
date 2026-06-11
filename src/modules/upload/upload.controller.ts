@@ -5,7 +5,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
@@ -24,7 +24,7 @@ export class UploadController {
         destination: join(process.cwd(), 'uploads'),
         filename: (_req, file, cb) => {
           const ext = extname(file.originalname).toLowerCase();
-          cb(null, `${uuidv4()}${ext}`);
+          cb(null, `${randomUUID()}${ext}`);
         },
       }),
       fileFilter: (_req, file, cb) => {
