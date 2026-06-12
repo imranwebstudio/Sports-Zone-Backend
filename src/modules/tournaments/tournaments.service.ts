@@ -1,12 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { IsString, IsOptional, IsNumber } from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export class CreateTournamentDto {
+  @IsString()
   name: string;
+
+  @IsString()
   slug: string;
+
+  @IsOptional()
+  @IsString()
   logo?: string;
+
+  @IsOptional()
+  @IsString()
   country?: string;
+
+  @IsOptional()
+  @IsString()
   sport?: string;
+
+  @IsOptional()
+  @IsNumber()
   sortOrder?: number;
 }
 
