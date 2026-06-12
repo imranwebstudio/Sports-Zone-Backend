@@ -1,15 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { IsString, IsOptional, IsBoolean, IsInt, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export class CreateChannelDto {
-  matchId: string;
-  name: string;
-  language?: string;
-  logo?: string;
-  thumbnail?: string;
-  destinationUrl: string;
-  isActive?: boolean;
-  sortOrder?: number;
+  @IsUUID() matchId: string;
+  @IsString() name: string;
+  @IsOptional() @IsString() language?: string;
+  @IsOptional() @IsString() logo?: string;
+  @IsOptional() @IsString() thumbnail?: string;
+  @IsString() destinationUrl: string;
+  @IsOptional() @IsBoolean() isActive?: boolean;
+  @IsOptional() @IsInt() @Type(() => Number) sortOrder?: number;
 }
 
 @Injectable()

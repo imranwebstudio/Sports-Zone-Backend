@@ -16,6 +16,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { NewsSyncModule } from './modules/news-sync/news-sync.module';
+import { SportsApiModule } from './modules/sports-api/sports-api.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { NewsSyncModule } from './modules/news-sync/news-sync.module';
     SettingsModule,
     UploadModule,
     NewsSyncModule,
+    SportsApiModule,
   ],
 })
 export class AppModule {}

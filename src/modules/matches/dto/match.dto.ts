@@ -66,6 +66,10 @@ export class CreateMatchDto {
   @IsString()
   @IsOptional()
   metaDescription?: string;
+
+  @IsString()
+  @IsOptional()
+  externalId?: string;
 }
 
 export class UpdateMatchDto extends CreateMatchDto {}

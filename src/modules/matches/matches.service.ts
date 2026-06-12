@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { SportsApiService, LiveMatchData } from '../sports-api/sports-api.service';
 import { CreateMatchDto, UpdateMatchDto, MatchQueryDto } from './dto/match.dto';
 
 const INCLUDE = {
@@ -14,7 +15,10 @@ const INCLUDE = {
 
 @Injectable()
 export class MatchesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sportsApi: SportsApiService,
+  ) {}
 
   async findAll(query: MatchQueryDto) {
     const page = parseInt(query.page || '1', 10);
@@ -60,6 +64,21 @@ export class MatchesService {
       data: { viewCount: { increment: 1 } },
     });
     return match;
+  }
+
+  async getLiveData(slug: string) {
+    const match = await this.prisma.match.findUnique({ where: { slug }, include: INCLUDE });
+    if (!match) throw new NotFoundException('Match not found');
+
+    let liveData: LiveMatchData | null = null;
+    if (match.externalId) {
+      const fdMatch = await this.sportsApi.getMatch(match.externalId);
+      if (fdMatch) {
+        liveData = this.sportsApi.transformMatch(fdMatch);
+      }
+    }
+
+    return { ...match, liveData };
   }
 
   async create(dto: CreateMatchDto) {
