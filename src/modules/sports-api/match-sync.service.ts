@@ -11,6 +11,9 @@ export class MatchSyncService {
     'united states': ['usa', 'us', 'united states of america'],
     'usa': ['united states', 'us'],
     'south korea': ['korea republic', 'republic of korea', 'korea'],
+    // Türkiye: norm() strips diacritics → "turkiye", not "turkey"
+    'turkey': ['turkiye', 'türkiye'],
+    'turkiye': ['turkey'],
     'korea republic': ['south korea', 'korea'],
     'north korea': ['korea dpr', 'dpr korea'],
     'iran': ['ir iran', 'islamic republic of iran'],
@@ -147,6 +150,20 @@ export class MatchSyncService {
     return teams.find((t) => this.teamsMatch(t.name, espnName)) || null;
   }
 
+  /** Returns true for TBD knockout-stage placeholders ESPN sends before teams are determined. */
+  private isPlaceholder(name: string): boolean {
+    const n = name.toLowerCase();
+    return (
+      n.includes('winner') ||
+      n.includes('loser') ||
+      n.includes('third place') ||
+      n.includes('round of') ||
+      n.includes('quarterfinal') ||
+      n.includes('semifinal') ||
+      /group [a-l] (1st|2nd|winner|runner)/i.test(name)
+    );
+  }
+
   // ─── Import real WC schedule from ESPN, creating missing matches ──────────
 
   async importRealSchedule(): Promise<{
@@ -186,6 +203,11 @@ export class MatchSyncService {
       const awayTeam = this.findTeamInList(dbTeams, em.awayName);
 
       if (!homeTeam || !awayTeam) {
+        // Knockout-stage TBD names (e.g. "Group A Winner") — skip silently
+        if (this.isPlaceholder(em.homeName) || this.isPlaceholder(em.awayName)) {
+          skipped++;
+          continue;
+        }
         if (!homeTeam) missingTeams.add(em.homeName);
         if (!awayTeam) missingTeams.add(em.awayName);
         skipped++;
@@ -193,19 +215,15 @@ export class MatchSyncService {
       }
 
       const matchTime = new Date(em.datetime || em.date);
-      const dayStart = new Date(matchTime); dayStart.setUTCHours(0, 0, 0, 0);
-      const dayEnd = new Date(matchTime); dayEnd.setUTCHours(23, 59, 59, 999);
 
-      // Look for an existing match: by externalId first, then by teams+day
+      // Look for an existing match: by externalId first, then by team pair.
+      // No date filter here — WC teams meet at most once per role, and skipping
+      // the date constraint avoids misses caused by ET/UTC day-boundary differences.
       const existing = await this.prisma.match.findFirst({
         where: {
           OR: [
             { externalId: em.id },
-            {
-              homeTeamId: homeTeam.id,
-              awayTeamId: awayTeam.id,
-              matchTime: { gte: dayStart, lte: dayEnd },
-            },
+            { homeTeamId: homeTeam.id, awayTeamId: awayTeam.id },
           ],
         },
       });
