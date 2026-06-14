@@ -14,4 +14,11 @@ export class NewsSyncController {
   trigger() {
     return this.svc.syncNews();
   }
+
+  @Post('backfill-content')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  backfill() {
+    return this.svc.backfillContent();
+  }
 }

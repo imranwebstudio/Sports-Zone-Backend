@@ -76,20 +76,36 @@ export class ArticlesService {
   }
 
   async findTrending(limit = 6) {
-    return this.prisma.article.findMany({
+    const include = { category: { select: { name: true, slug: true, color: true } } };
+    const flagged = await this.prisma.article.findMany({
       where: { isTrending: true, status: ArticleStatus.PUBLISHED },
       take: limit,
       orderBy: { viewCount: 'desc' },
-      include: { category: { select: { name: true, slug: true, color: true } } },
+      include,
+    });
+    if (flagged.length > 0) return flagged;
+    return this.prisma.article.findMany({
+      where: { status: ArticleStatus.PUBLISHED },
+      take: limit,
+      orderBy: [{ viewCount: 'desc' }, { publishedAt: 'desc' }],
+      include,
     });
   }
 
   async findBreaking(limit = 5) {
-    return this.prisma.article.findMany({
+    const include = { category: { select: { name: true, slug: true, color: true } } };
+    const flagged = await this.prisma.article.findMany({
       where: { isBreaking: true, status: ArticleStatus.PUBLISHED },
       take: limit,
       orderBy: { publishedAt: 'desc' },
-      include: { category: { select: { name: true, slug: true, color: true } } },
+      include,
+    });
+    if (flagged.length > 0) return flagged;
+    return this.prisma.article.findMany({
+      where: { status: ArticleStatus.PUBLISHED },
+      take: limit,
+      orderBy: { publishedAt: 'desc' },
+      include,
     });
   }
 

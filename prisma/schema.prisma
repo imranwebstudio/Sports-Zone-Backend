@@ -60,6 +60,7 @@ model Article {
   viewCount       Int           @default(0)
   readTime        Int           @default(5)
   tags            String[]
+  sourceUrl       String?
   metaTitle       String?
   metaDescription String?
   publishedAt     DateTime?
@@ -71,6 +72,7 @@ model Article {
   @@index([categoryId])
   @@index([status])
   @@index([publishedAt])
+  @@index([sourceUrl])
 }
 
 enum ArticleStatus {
